@@ -1,5 +1,7 @@
 # quant-cn — A股 + 港股量化虚拟盘交易系统
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 结合本机 **vibe-trading**（LLM 分析层）与 **akshare**（免费行情数据），实现
 **数据 → 策略信号 → 虚拟盘撮合 → 回测 → 日报** 的全自动闭环，聚焦 A股与港股。
 
