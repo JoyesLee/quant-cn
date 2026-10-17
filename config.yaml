@@ -1,0 +1,64 @@
+# ============================================================
+# quant-cn 量化交易系统配置（A股 + 港股 虚拟盘）
+# ============================================================
+base_currency: CNY
+initial_capital: 1000000        # 初始虚拟资金（人民币）
+start_date: "20240101"          # 数据/回测起始日
+
+# 观察池（虚拟盘可交易标的）
+universe:
+  - {symbol: "600519", market: CN, name: "贵州茅台"}
+  - {symbol: "000858", market: CN, name: "五粮液"}
+  - {symbol: "300750", market: CN, name: "宁德时代"}
+  - {symbol: "601318", market: CN, name: "中国平安"}
+  - {symbol: "600036", market: CN, name: "招商银行"}
+  - {symbol: "00700", market: HK, name: "腾讯控股"}
+  - {symbol: "09988", market: HK, name: "阿里巴巴-W"}
+  - {symbol: "01810", market: HK, name: "小米集团-W"}
+  - {symbol: "03690", market: HK, name: "美团-W"}
+  - {symbol: "01211", market: HK, name: "比亚迪股份"}
+
+# 三个策略子账户（sleeve），权重之和 = 1
+strategies:
+  trend:                        # 趋势跟踪：双均线
+    weight: 0.40
+    fast: 20
+    slow: 60
+  reversion:                    # 均值回归：超短 RSI（Connors RSI2 风格）
+    weight: 0.30
+    rsi_n: 2
+    buy_th: 10                  # RSI(2) < 10 买入
+    exit_th: 70                 # RSI(2) > 70 卖出
+  momentum:                     # 截面动量：周度调仓，做多排名前 N
+    weight: 0.30
+    lookback: 20                # 20 日收益率排名
+    top_n: 3
+    rebalance_days: 5           # 每 5 个交易日调一次
+
+# 交易成本模型（虚拟盘撮合按此扣费）
+fees:
+  CN:
+    commission: 0.00025         # 佣金 万2.5
+    min_commission: 5           # 最低 5 元
+    stamp_sell: 0.0005          # 印花税，仅卖出 0.05%
+    transfer: 0.00001           # 过户费 0.001%
+  HK:
+    commission: 0.0005          # 佣金 0.05%
+    min_commission: 5           # 最低 5 HKD
+    stamp: 0.001                # 印花税 0.1% 双边
+    other: 0.0001               # 交易费+交收费等合计约 0.01%
+
+lot_size:
+  CN: 100                       # A股一手 = 100 股
+  HK: 100                       # 简化：统一按 100 股一手（实际每手股数因股票而异）
+
+# 汇率：1 HKD = fx CNY（优先实时抓取中行折算价，失败用此兜底）
+fx_fallback: 0.8566
+
+benchmarks:
+  cn: "sh000300"               # 沪深300
+  hk: "HSI"                    # 恒生指数
+
+risk:
+  max_weight_per_stock: 0.25    # 单票最大权重
+  min_trade_value: 2000         # 低于此金额（CNY等值）不交易，减少碎股

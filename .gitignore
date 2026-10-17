@@ -1,0 +1,15 @@
+# 数据与账户状态（不公开）
+data/
+state/
+logs/
+reports/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+
+# 系统
+.DS_Store
+*.tmp
